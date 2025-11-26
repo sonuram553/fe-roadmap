@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Flexbox Writing Modes Demo</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        line-height: 1.6;
+      }
+
+      .demo-section {
+        margin: 30px 0;
+        padding: 20px;
+        border: 2px solid #ddd;
+        border-radius: 8px;
+      }
+
+      .container {
+        display: flex;
+        background: #f0f8ff;
+        padding: 10px;
+        margin: 10px 0;
+        border: 1px solid #333;
+        min-height: 60px;
+      }
+
+      .item {
+        background: #ff6b6b;
+        color: white;
+        padding: 10px;
+        margin: 2px;
+        text-align: center;
+        min-width: 60px;
+      }
+
+      .item:nth-child(2) {
+        background: #4ecdc4;
+      }
+      .item:nth-child(3) {
+        background: #45b7d1;
+      }
+
+      .rtl-container {
+        direction: rtl;
+      }
+
+      .vertical-writing {
+        writing-mode: vertical-rl;
+        text-orientation: upright;
+      }
+
+      .code-block {
+        background: #f4f4f4;
+        padding: 10px;
+        border-radius: 4px;
+        font-family: monospace;
+        margin: 10px 0;
+      }
+
+      h2 {
+        color: #333;
+        border-bottom: 2px solid #4ecdc4;
+        padding-bottom: 5px;
+      }
+
+      .axis-label {
+        font-weight: bold;
+        color: #e74c3c;
+        margin: 5px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Flexbox Writing Modes Impact on Main Axis</h1>
+
+    <div class="demo-section">
+      <h2>1. English (LTR) - Default Writing Mode</h2>
+      <div class="axis-label">
+        Main Axis: Left → Right | Cross Axis: Top → Bottom
+      </div>
+      <div class="code-block">direction: ltr; flex-direction: row;</div>
+      <div class="container">
+        <div class="item">1</div>
+        <div class="item">2</div>
+        <div class="item">3</div>
+      </div>
+      <p>
+        <strong>Start edge:</strong> Left side |
+        <strong>End edge:</strong> Right side
+      </p>
+    </div>
+
+    <div class="demo-section">
+      <h2>2. Arabic (RTL) - Right-to-Left Writing Mode</h2>
+      <div class="axis-label">
+        Main Axis: Right → Left | Cross Axis: Top → Bottom
+      </div>
+      <div class="code-block">direction: rtl; flex-direction: row;</div>
+      <div class="container rtl-container">
+        <div class="item">1</div>
+        <div class="item">2</div>
+        <div class="item">3</div>
+      </div>
+      <p>
+        <strong>Start edge:</strong> Right side |
+        <strong>End edge:</strong> Left side
+      </p>
+    </div>
+
+    <div class="demo-section">
+      <h2>3. Column Direction in LTR</h2>
+      <div class="axis-label">
+        Main Axis: Top → Bottom | Cross Axis: Left → Right
+      </div>
+      <div class="code-block">direction: ltr; flex-direction: column;</div>
+      <div class="container" style="flex-direction: column; height: 200px">
+        <div class="item">1</div>
+        <div class="item">2</div>
+        <div class="item">3</div>
+      </div>
+      <p>
+        <strong>Start edge:</strong> Top | <strong>End edge:</strong> Bottom
+      </p>
+    </div>
+
+    <div class="demo-section">
+      <h2>4. Column Direction in RTL</h2>
+      <div class="axis-label">
+        Main Axis: Top → Bottom | Cross Axis: Right → Left
+      </div>
+      <div class="code-block">direction: rtl; flex-direction: column;</div>
+      <div
+        class="container rtl-container"
+        style="flex-direction: column; height: 200px"
+      >
+        <div class="item">1</div>
+        <div class="item">2</div>
+        <div class="item">3</div>
+      </div>
+      <p>
+        <strong>Start edge:</strong> Top | <strong>End edge:</strong> Bottom
+      </p>
+    </div>
+
+    <div class="demo-section">
+      <h2>5. Vertical Writing Mode (Japanese/Chinese style)</h2>
+      <div class="axis-label">
+        Main Axis: Top → Bottom | Cross Axis: Right → Left
+      </div>
+      <div class="code-block">
+        writing-mode: vertical-rl; flex-direction: row;
+      </div>
+      <div class="container vertical-writing" style="height: 200px">
+        <div class="item">1</div>
+        <div class="item">2</div>
+        <div class="item">3</div>
+      </div>
+      <p>
+        <strong>Start edge:</strong> Top | <strong>End edge:</strong> Bottom
+      </p>
+    </div>
+
+    <div class="demo-section">
+      <h2>6. Justify-content Behavior in Different Writing Modes</h2>
+
+      <h3>LTR with justify-content: flex-start</h3>
+      <div class="container" style="justify-content: flex-start">
+        <div class="item">Start</div>
+        <div class="item">Middle</div>
+        <div class="item">End</div>
+      </div>
+
+      <h3>RTL with justify-content: flex-start</h3>
+      <div class="container rtl-container" style="justify-content: flex-start">
+        <div class="item">Start</div>
+        <div class="item">Middle</div>
+        <div class="item">End</div>
+      </div>
+
+      <h3>LTR with justify-content: flex-end</h3>
+      <div class="container" style="justify-content: flex-end">
+        <div class="item">Start</div>
+        <div class="item">Middle</div>
+        <div class="item">End</div>
+      </div>
+
+      <h3>RTL with justify-content: flex-end</h3>
+      <div class="container rtl-container" style="justify-content: flex-end">
+        <div class="item">Start</div>
+        <div class="item">Middle</div>
+        <div class="item">End</div>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>Key Takeaways</h2>
+      <ul>
+        <li>
+          <strong>Main axis start/end depends on writing mode:</strong> LTR
+          starts left, RTL starts right
+        </li>
+        <li>
+          <strong>Cross axis start/end depends on writing mode:</strong>
+          Horizontal writing modes go top→bottom, vertical writing modes go
+          left→right (or right→left in RTL)
+        </li>
+        <li>
+          <strong>justify-content values adapt:</strong> flex-start and flex-end
+          automatically adjust to the writing mode
+        </li>
+        <li>
+          <strong>This is why we use logical properties:</strong> Instead of
+          "left" and "right", we use "start" and "end"
+        </li>
+        <li>
+          <strong>Flexbox is writing-mode agnostic:</strong> It works with any
+          writing mode without additional CSS changes
+        </li>
+      </ul>
+    </div>
+  </body>
+</html>

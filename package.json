@@ -1,0 +1,16 @@
+{
+  "name": "fe-roadmap",
+  "version": "1.0.0",
+  "description": "Frontend Roadmap with Playwright MCP Integration",
+  "main": "index.js",
+  "scripts": {},
+  "keywords": [
+    "frontend",
+    "roadmap",
+    "playwright",
+    "mcp",
+    "testing"
+  ],
+  "author": "",
+  "license": "MIT"
+}
