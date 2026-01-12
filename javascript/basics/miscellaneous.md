@@ -30,9 +30,15 @@ All other values are truthy (including `[]`, `{}`, and `"0"`).
 ```javascript
 let x = 7;
 
-x === 7 || x === 3 && x > 10;
+x === 7 || (x === 3 && x > 10);
 // Evaluated as: x === 7 || (x === 3 && x > 10)
 // Result: true || (false && false) → true
 ```
 
 **Key Point:** `&&` has higher precedence than `||`, so it's evaluated first.
+
+---
+
+## Scope
+
+Variable visibility, the location where a variable is defined, dictates where we have access to that variable.
