@@ -1,0 +1,189 @@
+# innerText vs textContent
+
+Both `innerText` and `textContent` are properties used to get or set the text content of a DOM element, but they behave quite differently.
+
+---
+
+## textContent
+
+`textContent` returns the **raw text content** of an element and all its descendants, including text inside `<script>` and `<style>` elements.
+
+### Characteristics
+
+- Returns text from **all elements**, including hidden ones (`display: none`, `visibility: hidden`)
+- Includes text from `<script>` and `<style>` tags
+- Preserves whitespace as written in the HTML source
+- **Does not trigger a reflow** (better performance)
+- Part of the DOM specification (W3C standard)
+
+### Example
+
+```html
+<div id="example">
+  Hello
+  <span style="display: none;">Hidden</span>
+  <script>
+    console.log("script");
+  </script>
+  World
+</div>
+```
+
+```javascript
+const el = document.getElementById("example");
+console.log(el.textContent);
+// Output: "\n  Hello\n  Hidden\n  console.log('script');\n  World\n"
+```
+
+---
+
+## innerText
+
+`innerText` returns the **rendered text content** of an element — what the user actually sees on the screen.
+
+### Characteristics
+
+- Returns only **visible text** (respects CSS styling)
+- Ignores text inside `<script>` and `<style>` tags
+- Normalizes whitespace (collapses multiple spaces, respects `<br>` tags)
+- **Triggers a reflow** to compute styles (slower performance)
+- Originally an IE proprietary property, now standardized
+
+### Example
+
+```html
+<div id="example">
+  Hello
+  <span style="display: none;">Hidden</span>
+  <script>
+    console.log("script");
+  </script>
+  World
+</div>
+```
+
+```javascript
+const el = document.getElementById("example");
+console.log(el.innerText);
+// Output: "Hello World"
+```
+
+---
+
+## Side-by-Side Comparison
+
+| Feature                            | `textContent`       | `innerText`                 |
+| ---------------------------------- | ------------------- | --------------------------- |
+| **Hidden elements**                | ✅ Included         | ❌ Excluded                 |
+| **`<script>` / `<style>` content** | ✅ Included         | ❌ Excluded                 |
+| **Whitespace handling**            | Preserves as-is     | Normalizes (collapses)      |
+| **Performance**                    | ⚡ Fast (no reflow) | 🐢 Slower (triggers reflow) |
+| **Line breaks**                    | Not aware of `<br>` | Respects `<br>` as `\n`     |
+| **CSS awareness**                  | ❌ No               | ✅ Yes                      |
+| **Standard**                       | W3C DOM             | HTML Living Standard        |
+
+---
+
+## Setting Text Content
+
+Both properties can also be used to **set** text content:
+
+```javascript
+element.textContent = "New text"; // Sets raw text
+element.innerText = "New text"; // Sets text, interprets \n as <br>
+```
+
+### Key difference when setting:
+
+```javascript
+element.textContent = "Line 1\nLine 2";
+// Renders as: "Line 1\nLine 2" (literal, no line break shown)
+
+element.innerText = "Line 1\nLine 2";
+// Renders as: "Line 1<br>Line 2" (visible line break)
+```
+
+---
+
+## Assigning HTML Strings
+
+Both `innerText` and `textContent` treat assigned values as **plain text**, not HTML. Any HTML tags in the string are escaped and displayed literally.
+
+### Example with HTML tags
+
+```javascript
+const div = document.getElementById("container");
+
+div.textContent = "<strong>Bold</strong> text";
+// Renders as: "<strong>Bold</strong> text" (tags shown as text)
+
+div.innerText = "<strong>Bold</strong> text";
+// Renders as: "<strong>Bold</strong> text" (tags shown as text)
+```
+
+Under the hood, special characters are escaped:
+- `<` becomes `&lt;`
+- `>` becomes `&gt;`
+
+So the actual HTML in the DOM becomes:
+
+```html
+<div id="container">&lt;strong&gt;Bold&lt;/strong&gt; text</div>
+```
+
+### Script Tags (XSS Safety)
+
+If you assign a string containing `<script>` tags, they are **not executed**. They are treated as plain text:
+
+```javascript
+const div = document.getElementById("container");
+
+// ✅ Safe - script is NOT executed
+div.textContent = "<script>alert('XSS')</script>";
+// Renders as literal text: "<script>alert('XSS')</script>"
+
+div.innerText = "<script>alert('XSS')</script>";
+// Renders as literal text: "<script>alert('XSS')</script>"
+```
+
+This makes both properties **safe against XSS (Cross-Site Scripting) attacks** when displaying user input.
+
+### Comparison with innerHTML
+
+Unlike `textContent` and `innerText`, `innerHTML` **parses and renders HTML**:
+
+```javascript
+// ⚠️ innerHTML parses HTML - be careful with user input!
+div.innerHTML = "<strong>Bold</strong> text";
+// Renders as: Bold text (with actual bold styling)
+
+// ⚠️ Potential XSS vulnerability with innerHTML
+div.innerHTML = "<img src='x' onerror='alert(1)'>";
+// This WILL execute the alert!
+```
+
+### Quick Reference
+
+| Assignment                            | `textContent` / `innerText`    | `innerHTML`                |
+| ------------------------------------- | ------------------------------ | -------------------------- |
+| `"<b>Bold</b>"`                       | Shows: `<b>Bold</b>` as text   | Shows: **Bold** (rendered) |
+| `"<script>alert(1)</script>"`         | Shows as text, **not executed** | Script not executed*       |
+| `"<img src='x' onerror='alert(1)'>"` | Shows as text, **safe**         | **Executes alert!** ⚠️     |
+
+> *Note: While `innerHTML` doesn't execute `<script>` tags directly, it can still execute JavaScript through event handlers like `onerror`, `onclick`, etc.
+
+---
+
+## Performance Note
+
+```javascript
+// ❌ Avoid in loops if performance matters
+for (const el of elements) {
+  console.log(el.innerText); // Triggers reflow each time!
+}
+
+// ✅ Better for performance
+for (const el of elements) {
+  console.log(el.textContent); // No reflow
+}
+```
