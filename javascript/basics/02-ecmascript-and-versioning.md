@@ -19,25 +19,17 @@
 - **ES5 (2009)**: Added strict mode, JSON support, array methods (map, filter, forEach)
 - **ES6/ES2015**: Biggest update - **arrow functions**, **classes**, **let/const**, **promises**, **modules**, **template literals**, **Array Rest/Spread properties**
 - **ES2016+**: Annual releases with incremental improvements
-  - ES2016: Array.includes(), exponentiation operator (\*\*)
+  - ES2016: Array.includes(), exponentiation operator
   - ES2017: async/await, Object.entries/values
-  - ES2018: Object Rest/spread properties, async iteration
+  - ES2018: Object Rest/spread properties
   - ES2019: Array.flat(), Object.fromEntries()
   - ES2020: Optional chaining (?.), nullish coalescing (??)
   - ES2021: Logical assignment operators, Promise.any()
   - ES2022: Top-level await, private class fields
-  - ES2023+: Continued evolution with new features
 
 ## Browser Support
 
 - Modern browsers continuously implement new ECMAScript features
 - Tools like Babel transpile newer JavaScript to older versions for compatibility
 - Check [caniuse.com](https://caniuse.com) for feature support across browsers
-
-## Resources
-
-- [TC39 Proposals](https://github.com/tc39/proposals)
-- [ECMAScript Specification](https://tc39.es/ecma262/)
-- [MDN JavaScript Guide](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide)
-
 

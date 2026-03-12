@@ -60,51 +60,6 @@ console.log(y); // ReferenceError: Cannot access 'y' before initialization
 const y = 10;
 ```
 
-## Re-declaration
-
-### var - Can be Re-declared
-
-```javascript
-var x = 10;
-var x = 20; // ✅ No error
-console.log(x); // 20
-```
-
-### let & const - Cannot be Re-declared
-
-```javascript
-let x = 10;
-let x = 20; // ❌ SyntaxError: Identifier 'x' has already been declared
-
-const y = 10;
-const y = 20; // ❌ SyntaxError: Identifier 'y' has already been declared
-```
-
-## Re-assignment
-
-### var & let - Can be Re-assigned
-
-```javascript
-var x = 10;
-x = 20; // ✅ Works
-
-let y = 10;
-y = 20; // ✅ Works
-```
-
-### const - Cannot be Re-assigned
-
-```javascript
-const x = 10;
-x = 20; // ❌ TypeError: Assignment to constant variable
-
-// However, object properties can be modified
-const obj = { name: "John" };
-obj.name = "Jane"; // ✅ Works
-obj.age = 30; // ✅ Works
-obj = {}; // ❌ TypeError: Assignment to constant variable
-```
-
 ## Best Practices
 
 1. **Use `const` by default** - prevents accidental re-assignment
