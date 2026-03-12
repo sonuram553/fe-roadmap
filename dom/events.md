@@ -1,0 +1,395 @@
+# DOM Events Guide
+
+## addEventListener
+
+The modern way to attach event handlers to DOM elements.
+
+### Syntax
+
+```javascript
+element.addEventListener(eventType, handler, options);
+```
+
+### Options
+
+```javascript
+element.addEventListener("click", handler, {
+  capture: false, // Use capturing phase instead of bubbling
+  once: true, // Handler runs only once, then removed
+  passive: true, // Handler won't call preventDefault()
+  signal: abortController.signal, // Attach abort signal
+});
+```
+
+### Removing Listeners
+
+```javascript
+function handleClick(event) {
+  console.log("Clicked");
+}
+
+element.addEventListener("click", handleClick);
+element.removeEventListener("click", handleClick);
+```
+
+**Important:** Must use the same function reference to remove.
+
+---
+
+## Event Delegation
+
+Attach a single event listener to a parent element to handle events from multiple children.
+
+### Without Delegation (Inefficient)
+
+```javascript
+// Bad: Adding listener to each item
+const items = document.querySelectorAll(".item");
+items.forEach((item) => {
+  item.addEventListener("click", handleClick);
+});
+```
+
+### With Delegation (Efficient)
+
+```javascript
+// Good: Single listener on parent
+document.querySelector(".list").addEventListener("click", function (event) {
+  // Check if clicked element matches our target
+  if (event.target.matches(".item")) {
+    handleItemClick(event);
+  }
+});
+```
+
+#### Understanding `.matches()`
+
+The `.matches(selector)` method checks if an element matches a CSS selector, returning `true` or `false`.
+
+```javascript
+// Syntax
+element.matches(cssSelector);
+
+// Examples
+event.target.matches(".item"); // Has class "item"?
+event.target.matches("#myId"); // Has id "myId"?
+event.target.matches("button.primary"); // Is a button with class "primary"?
+event.target.matches(".item, .active"); // Matches either selector?
+```
+
+**Why use it in delegation?** When you click inside a parent, `event.target` is the actual clicked element. `.matches()` filters to only handle clicks on elements matching your selector, ignoring clicks on other children.
+
+**For nested elements:** If `.item` contains child elements, use `.closest()` instead to find the nearest ancestor:
+
+```javascript
+const item = event.target.closest(".item");
+if (item) {
+  // item is the .item element, even if a child was clicked
+}
+```
+
+### Advanced Pattern
+
+```javascript
+document.addEventListener("click", function (event) {
+  // Handle multiple selectors
+  if (event.target.matches(".delete-btn")) {
+    deleteItem(event.target.closest(".item"));
+  } else if (event.target.matches(".edit-btn")) {
+    editItem(event.target.closest(".item"));
+  }
+});
+```
+
+### Benefits
+
+- Better performance with many elements
+- Works with dynamically added elements
+- Reduces memory usage
+- Cleaner code management
+
+---
+
+## Event Bubbling
+
+Events propagate from the target element up through its ancestors.
+
+### Propagation Phases
+
+1. **Capturing phase** (root → target) - rarely used
+2. **Target phase** (at the element itself)
+3. **Bubbling phase** (target → root) - default behavior
+
+### Example
+
+```javascript
+document.getElementById("outer").addEventListener("click", function () {
+  console.log("Outer div");
+});
+
+document.getElementById("inner").addEventListener("click", function () {
+  console.log("Inner div");
+});
+
+document.getElementById("button").addEventListener("click", function () {
+  console.log("Button");
+});
+
+// Click on button logs:
+// "Button"
+// "Inner div"
+// "Outer div"
+```
+
+### Controlling Propagation
+
+```javascript
+element.addEventListener("click", function (event) {
+  event.stopPropagation(); // Stops bubbling to parent elements
+});
+
+element.addEventListener("click", function (event) {
+  event.stopImmediatePropagation(); // Stops all other handlers AND propagation
+});
+```
+
+### Events That Don't Bubble
+
+Some events don't bubble: `focus`, `blur`, `load`, `scroll`
+
+Use their bubbling alternatives: `focusin`, `focusout`
+
+### Using `capture: true` for Capturing Phase
+
+By default, event listeners trigger during the bubbling phase. Set `capture: true` to trigger during the capturing phase instead.
+
+```javascript
+// Default bubbling (capture: false)
+outer.addEventListener("click", () => console.log("Outer"));
+inner.addEventListener("click", () => console.log("Inner"));
+button.addEventListener("click", () => console.log("Button"));
+
+// Click button logs:
+// "Button" → "Inner" → "Outer" (bubbles up)
+
+// With capturing (capture: true)
+outer.addEventListener("click", () => console.log("Outer"), { capture: true });
+inner.addEventListener("click", () => console.log("Inner"), { capture: true });
+button.addEventListener("click", () => console.log("Button"));
+
+// Click button logs:
+// "Outer" → "Inner" → "Button" (captures down first)
+```
+
+#### Mixed Capturing and Bubbling
+
+```javascript
+// Capturing phase listeners
+outer.addEventListener("click", () => console.log("1. Outer capturing"), true);
+inner.addEventListener("click", () => console.log("2. Inner capturing"), true);
+
+// Target phase listener
+button.addEventListener("click", () => console.log("3. Button"));
+
+// Bubbling phase listeners
+inner.addEventListener("click", () => console.log("4. Inner bubbling"));
+outer.addEventListener("click", () => console.log("5. Outer bubbling"));
+
+// Click button logs all 5 in order: capturing → target → bubbling
+```
+
+#### When to Use Capturing
+
+Capturing is rarely needed, but useful for:
+
+**1. Intercepting events before they reach children**
+
+```javascript
+// Disable all interactions in a section
+disabledSection.addEventListener(
+  "click",
+  function (event) {
+    event.stopPropagation(); // Block before reaching children
+    console.log("Section is disabled");
+  },
+  { capture: true },
+);
+```
+
+**2. Global monitoring or logging**
+
+```javascript
+// Log all clicks before any handler processes them
+document.addEventListener(
+  "click",
+  function (event) {
+    console.log("Click on:", event.target.tagName);
+  },
+  { capture: true },
+);
+```
+
+**3. Ensuring execution order**
+
+```javascript
+// Parent handler must run first
+parent.addEventListener("click", criticalHandler, { capture: true });
+child.addEventListener("click", normalHandler); // Runs after
+```
+
+**Summary:** Use `capture: false` (default) for normal event handling. Use `capture: true` only when you need to intercept events before they reach their target.
+
+---
+
+## preventDefault
+
+Cancels the default browser behavior for an event.
+
+### Common Use Cases
+
+#### Form Submission
+
+```javascript
+form.addEventListener("submit", function (event) {
+  event.preventDefault();
+
+  // Custom validation
+  const formData = new FormData(event.target);
+  fetch("/api/submit", {
+    method: "POST",
+    body: formData,
+  });
+});
+```
+
+#### Link Navigation
+
+```javascript
+link.addEventListener("click", function (event) {
+  event.preventDefault();
+
+  // SPA routing
+  navigateTo(link.href);
+});
+```
+
+#### Context Menu
+
+This intercepts the right-click context menu. By calling `preventDefault()`, it stops the browser's default context menu from appearing, allowing you to show a custom menu instead at the mouse cursor position.
+
+```javascript
+element.addEventListener("contextmenu", function (event) {
+  event.preventDefault();
+  showCustomMenu(event.pageX, event.pageY);
+});
+```
+
+#### Keyboard Shortcuts
+
+This creates a custom Cmd+S (Mac) or Ctrl+S (Windows/Linux) keyboard shortcut. Normally, these trigger the browser's "Save Page" dialog. By preventing the default behavior, you can implement your own save functionality (like auto-saving a document in a web app).
+
+```javascript
+document.addEventListener("keydown", function (event) {
+  // Check for Cmd (Mac) or Ctrl (Windows/Linux)
+  if ((event.metaKey || event.ctrlKey) && event.key === "s") {
+    event.preventDefault();
+    saveDocument();
+  }
+});
+```
+
+### Checking if Preventable
+
+This demonstrates a safety check. Not all events can be prevented - the `cancelable` property tells you if `preventDefault()` will have any effect. This prevents errors and makes your code more robust, though in practice most interactive events (clicks, key presses, etc.) are cancelable.
+
+```javascript
+element.addEventListener("click", function (event) {
+  if (event.cancelable) {
+    event.preventDefault();
+  }
+});
+```
+
+---
+
+### Keyboard Events
+
+| Event          | Description                      |
+| -------------- | -------------------------------- |
+| `keydown`      | Key is pressed (repeats if held) |
+| `keyup`        | Key is released                  |
+| ~~`keypress`~~ | Deprecated, use `keydown`        |
+
+```javascript
+document.addEventListener("keydown", function (event) {
+  console.log(event.key); // 'a', 'Enter', 'ArrowUp'
+  console.log(event.code); // 'KeyA', 'Enter', 'ArrowUp'
+  console.log(event.ctrlKey); // Boolean: Ctrl pressed?
+  console.log(event.shiftKey); // Boolean: Shift pressed?
+  console.log(event.altKey); // Boolean: Alt pressed?
+  console.log(event.metaKey); // Boolean: Cmd/Win pressed?
+});
+```
+
+**Note:** Use `keydown` for arrow keys and special keys, not `keypress`.
+
+### Form Events
+
+| Event      | Description                                                                                      |
+| ---------- | ------------------------------------------------------------------------------------------------ |
+| `submit`   | Form is submitted                                                                                |
+| `input`    | Input value changes (fires immediately)                                                          |
+| `change`   | Fires only when the element loses focus (user clicks away or tabs out) AND the value has changed |
+| `focus`    | Element receives focus (doesn't bubble)                                                          |
+| `blur`     | Element loses focus (doesn't bubble)                                                             |
+| `focusin`  | Element receives focus (bubbles)                                                                 |
+| `focusout` | Element loses focus (bubbles)                                                                    |
+
+```javascript
+input.addEventListener("input", function (event) {
+  console.log("Current value:", event.target.value);
+});
+
+input.addEventListener("change", function (event) {
+  console.log("Final value:", event.target.value);
+});
+```
+
+### Touch Events (Mobile)
+
+| Event         | Description              |
+| ------------- | ------------------------ |
+| `touchstart`  | Finger touches screen    |
+| `touchmove`   | Finger moves on screen   |
+| `touchend`    | Finger lifts from screen |
+| `touchcancel` | Touch is interrupted     |
+
+```javascript
+element.addEventListener("touchstart", function (event) {
+  const touch = event.touches[0];
+  console.log(touch.clientX, touch.clientY);
+});
+```
+
+---
+
+## Event Object Properties
+
+Common properties available on event objects:
+
+```javascript
+element.addEventListener("click", function (event) {
+  event.type; // Event name: 'click'
+  event.target; // Element that triggered event
+  event.currentTarget; // Element with listener attached
+  event.timeStamp; // Time event was created
+  event.isTrusted; // True if user action, false if script
+
+  // Methods
+  event.preventDefault();
+  event.stopPropagation();
+  event.stopImmediatePropagation();
+});
+```
+
+---
