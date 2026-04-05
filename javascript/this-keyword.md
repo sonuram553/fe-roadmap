@@ -286,6 +286,134 @@ console.log(p.name); // "Alice" — new wins!
 
 ---
 
+## Quick Decision Guide
+
+When you need to figure out the value of `this`, ask these questions **in order**:
+
+---
+
+### Step 1: Is the function defined as an arrow function?
+
+**Yes →** Write `console.log(this)` on the first valid line *above* the arrow function. Whatever that logs is the value of `this` inside the arrow.
+
+Arrow functions don't have their own `this` — they inherit it from the enclosing lexical scope at the time they are **defined**.
+
+```javascript
+const person = {
+  name: "Alice",
+  greetFriends() {
+    // console.log(this) here → person object
+    ["Bob", "Charlie"].forEach((friend) => {
+      // Arrow function: 'this' is same as above → person object
+      console.log(`${this.name} greets ${friend}`); // "Alice greets Bob"
+    });
+  },
+};
+person.greetFriends();
+```
+
+```javascript
+// Gotcha: arrow as a direct object method
+const obj = {
+  name: "Alice",
+  // console.log(this) here (module/global scope) → window / undefined
+  greet: () => {
+    console.log(this.name); // undefined — inherited window/global
+  },
+};
+obj.greet();
+```
+
+```javascript
+// Class: arrow as a class field
+class Person {
+  constructor(name) {
+    this.name = name;
+  }
+
+  // console.log(this) here (inside constructor) → the instance
+  greet = () => {
+    // Arrow field: 'this' is same as above → the instance
+    console.log(this.name);
+  };
+}
+
+const alice = new Person("Alice");
+alice.greet(); // "Alice" — this = alice instance
+
+// Works even when detached from the object
+const fn = alice.greet;
+fn(); // "Alice" — still bound to the instance via lexical 'this'
+```
+
+---
+
+### Step 2: Was `bind`, `call`, or `apply` used?
+
+**Yes →** `this` equals the **first argument** passed to `bind`/`call`/`apply`.
+
+```javascript
+function greet() {
+  console.log(this.name);
+}
+
+const alice = { name: "Alice" };
+const bob   = { name: "Bob" };
+
+greet.call(alice);          // "Alice"  — this = alice
+greet.apply(bob);           // "Bob"    — this = bob
+
+const boundGreet = greet.bind(alice);
+boundGreet();               // "Alice"  — this = alice (permanently)
+```
+
+```javascript
+// bind wins even when called as an object method
+const obj = { name: "Object", greet: boundGreet };
+obj.greet(); // still "Alice" — explicit bind beats implicit object binding
+```
+
+---
+
+### Step 3: All other cases
+
+`this` equals **whatever is to the left of the `.`** at the call site.
+
+```javascript
+const person = {
+  name: "Alice",
+  greet() {
+    console.log(this.name);
+  },
+};
+
+person.greet(); // "Alice" — 'person' is left of the dot
+
+const company = { name: "Acme", greet: person.greet };
+company.greet(); // "Acme" — 'company' is now left of the dot
+
+const fn = person.greet;
+fn(); // undefined (strict) / window.name (sloppy) — no dot at all
+```
+
+---
+
+### Decision flowchart at a glance
+
+```
+Is it an arrow function?
+   YES → this = this from the nearest enclosing non-arrow scope
+    NO ↓
+Was bind / call / apply used?
+   YES → this = first argument of bind/call/apply
+    NO ↓
+All other cases
+       → this = object left of the '.' at call site
+         (no dot = global object or undefined in strict mode)
+```
+
+---
+
 ## Quick Reference
 
 | Context             | `this` Value                    |
