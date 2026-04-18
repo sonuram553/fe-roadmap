@@ -1,0 +1,7 @@
+@import "tailwindcss";
+
+.progress-bar {
+  width: 100%;
+  height: 10px;
+  background-color: lightcoral;
+}
