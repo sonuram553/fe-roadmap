@@ -65,7 +65,7 @@ export const Timer = () => {
           fontWeight="bold"
           fill="#6366f1"
         >
-          {seconds.toFixed(0)}
+          {String(Math.ceil(seconds)).padStart(2, "0")}
         </text>
       </svg>
 
