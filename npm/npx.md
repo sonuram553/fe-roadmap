@@ -1,0 +1,140 @@
+# npx — Node Package Execute
+
+`npx` comes bundled with npm (since v5.2+) and lets you run a package without installing it globally.
+
+---
+
+## The Problem it Solves
+
+**Before npx**, to run a CLI tool you had to install it globally first:
+
+```bash
+# Old way — pollutes your global environment
+npm install -g create-react-app
+create-react-app my-app
+```
+
+**With npx**, you skip the install:
+
+```bash
+# Downloads, runs, then discards it
+npx create-react-app my-app
+```
+
+---
+
+## How npx Works
+
+```
+npx <package-name>
+```
+
+1. Checks if the package exists **locally** (`node_modules/.bin/`)
+2. If not found locally, checks your **global** npm install
+3. If not found globally, **downloads it temporarily**, runs it, then removes it
+
+---
+
+## Common Use Cases
+
+```bash
+# Run a package without installing
+npx create-vite@latest my-app
+
+# Run a specific version
+npx cowsay@1.0.0 "hello"
+
+# Run a local project binary (from node_modules/.bin)
+npx eslint src/
+
+# Always fetch a fresh copy (skip cache)
+npx --yes create-vite@latest my-app
+```
+
+---
+
+## npx vs npm vs node
+
+| Command | Purpose |
+|---|---|
+| `node` | Executes a `.js` file |
+| `npm` | Manages packages (install, publish, scripts) |
+| `npx` | Executes a package/binary directly |
+
+---
+
+## Practical Example
+
+```bash
+# Without npx — requires global install
+npm install -g typescript
+tsc --version
+
+# With npx — no install needed
+npx typescript --version
+npx tsc --init
+```
+
+---
+
+## Which Version Runs Without `@version`?
+
+When you run:
+
+```bash
+npx create-vite my-app
+```
+
+It runs the **latest version** on the npm registry — same as writing `@latest`:
+
+```bash
+npx create-vite my-app          # resolves to latest
+npx create-vite@latest my-app   # explicit, same result
+```
+
+### To Pin a Specific Version
+
+```bash
+# Exact version
+npx create-vite@5.0.0 my-app
+
+# Latest of a major version
+npx create-vite@5 my-app
+```
+
+### Check the Current Latest Version
+
+```bash
+npm view create-vite version
+```
+
+### Cache Caveat
+
+If you've run `npx create-vite` before, npx may use a **cached version** instead of fetching the latest. To always get the newest version, use `@latest`:
+
+```bash
+npx create-vite@latest my-app
+```
+
+> `@latest` and `--yes` solve different problems:
+> - `@latest` — controls **which version** runs (bypasses version cache)
+> - `--yes` — controls **prompts** (auto-confirms interactive questions)
+>
+> They can be combined: `npx --yes create-vite@latest my-app`
+
+---
+
+## Key Flags
+
+| Flag | Description |
+|---|---|
+| `--yes` / `-y` | Skip confirmation prompts |
+| `--no-install` | Only run if already installed, never download |
+| `--ignore-existing` | Always download, ignore local/global installs |
+| `-p <package>` | Install a package before running a different command |
+
+---
+
+## Summary
+
+**npm installs packages. npx runs them** — with or without installing first.
