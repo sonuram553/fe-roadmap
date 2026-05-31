@@ -91,9 +91,7 @@ Infinity - Infinity; // NaN
 // JSON serialization
 JSON.stringify({ a: NaN, b: Infinity }) // '{"a":null,"b":null}'
 
-  [
-    // Array methods
-    (1, NaN, 3)
-  ].indexOf(NaN) // -1 (can't find)
-  [(1, NaN, 3)].includes(NaN); // true ✅
+// Array methods
+[1, NaN, 3].indexOf(NaN);  // -1 (can't find, === doesn't work for NaN)
+[1, NaN, 3].includes(NaN); // true ✅ (uses SameValueZero)
 ```
