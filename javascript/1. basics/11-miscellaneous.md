@@ -30,7 +30,7 @@ All other values are truthy (including `[]`, `{}`, and `"0"`).
 ```javascript
 let x = 7;
 
-x === 7 || (x === 3 && x > 10);
+x === 7 || x === 3 && x > 10;
 // Evaluated as: x === 7 || (x === 3 && x > 10)
 // Result: true || (false && false) → true
 ```

@@ -99,6 +99,5 @@ null == undefined; // true (special case)
 
 ## Best Practices
 
-1. **Always use `===`** unless you have a specific reason
-2. Enable ESLint rule `eqeqeq` to enforce strict equality
-3. Same rules apply to `!==` (strict) and `!=` (loose)
+1. Enable ESLint rule `eqeqeq` to enforce strict equality
+2. Same rules apply to `!==` (strict) and `!=` (loose)
