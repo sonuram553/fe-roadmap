@@ -1,4 +1,4 @@
-I'll explain debouncing and throttling in JavaScript - two important techniques for controlling the frequency of function execution.
+Debouncing and Throttling in JavaScript - two important techniques for controlling the frequency of function execution.
 
 ## Debouncing
 
@@ -92,16 +92,6 @@ window.addEventListener("scroll", throttledScroll);
 - **API calls**: Prevent excessive requests
 - **Window resize**: Layout calculations after resizing stops
 
-```javascript
-// Search with debouncing
-const debouncedApiSearch = debounce(async (query) => {
-  if (query.length > 2) {
-    const results = await fetch(`/api/search?q=${query}`);
-    // Update UI with results
-  }
-}, 500);
-```
-
 ### Throttling:
 
 - **Scroll events**: Update UI elements during scrolling
@@ -122,44 +112,7 @@ const throttledScrollCheck = throttle(() => {
 window.addEventListener("scroll", throttledScrollCheck);
 ```
 
-## Advanced Implementation
-
-Here's a more robust debounce with leading/trailing options:
-
-```javascript
-function debounce(func, delay, options = {}) {
-  let timeoutId;
-  let lastCallTime;
-  const { leading = false, trailing = true } = options;
-
-  return function (...args) {
-    const now = Date.now();
-    const isFirstCall = !lastCallTime;
-
-    // Execute immediately on first call if leading is true
-    if (leading && isFirstCall) {
-      func.apply(this, args);
-    }
-
-    clearTimeout(timeoutId);
-    lastCallTime = now;
-
-    if (trailing) {
-      timeoutId = setTimeout(() => {
-        // Only execute if it's not the first call or leading is false
-        if (!leading || !isFirstCall) {
-          func.apply(this, args);
-        }
-        lastCallTime = null;
-      }, delay);
-    }
-  };
-}
-```
-
 ## When to Choose Which?
 
 - **Use Debouncing when**: You want to wait for a "pause" in events (user stops typing, stops resizing window)
 - **Use Throttling when**: You want to limit the frequency of continuous events (scrolling, mouse movement, button spam)
-
-Both techniques are essential for creating performant web applications by preventing excessive function calls and improving user experience.
