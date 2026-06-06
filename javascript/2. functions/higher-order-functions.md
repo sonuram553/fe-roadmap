@@ -111,10 +111,6 @@ const fruits = ["apple", "banana", "orange"];
 fruits.forEach(function (fruit, index) {
   console.log(`${index}: ${fruit}`);
 });
-// Output:
-// 0: apple
-// 1: banana
-// 2: orange
 ```
 
 ## Advanced Examples
@@ -191,12 +187,3 @@ console.log(curriedAdd(1, 2, 3)); // 6
 4. **Readability**: Code becomes more declarative and easier to understand
 5. **Testability**: Easier to test individual functions in isolation
 
-## Real-World Applications
-
-- **Event handlers**: `element.addEventListener('click', handleClick)`
-- **API calls**: `fetch(url).then(response => response.json())`
-- **Middleware**: Express.js middleware functions
-- **React components**: Higher-order components (HOCs)
-- **State management**: Redux reducers and actions
-
-Higher-order functions are a powerful concept that enables functional programming patterns and makes JavaScript code more flexible, reusable, and maintainable.
