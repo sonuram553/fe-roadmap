@@ -146,7 +146,9 @@ greetFn(); // TypeError: Cannot read property 'name' of undefined
 
 Why `undefined` and not `window`? **Classes are always in strict mode** by default — you don't need to add `"use strict"`. In strict mode, `this` is `undefined` when a function is called without a context.
 
-**Solutions to preserve `this` in classes:**
+---
+
+## Solutions to preserve `this` in classes
 
 **1. Bind in constructor**
 
