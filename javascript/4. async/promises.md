@@ -1,9 +1,3 @@
-# Mastering Asynchronous JavaScript and Promises
-
-JavaScript's asynchronous nature is what allows it to handle heavy tasks (like fetching data from a server) without freezing the entire browser.
-
----
-
 ## I. Core Concepts: Single-Threaded vs. Asynchronous
 
 ### 1. JS is Single-Threaded
@@ -76,10 +70,10 @@ To solve Callback Hell, we use **Promise Chaining**. This works because every `.
 ```javascript
 // Each function now returns a Promise instead of taking a callback
 getData()
-  .then((a) => getMoreData(a)) // Return the next promise
-  .then((b) => getEvenMoreData(b)) // The chain waits for this to finish
+  .then((a) => getMoreData(a))
+  .then((b) => getEvenMoreData(b))
   .then((c) => {
-    console.log(c); // Finally, use the data
+    console.log(c);
   })
   .catch((err) => {
     console.error("Error at any stage:", err); // One catch for all!
@@ -146,6 +140,7 @@ fetchData()
 In addition to `Promise.all` and `Promise.race`, modern JavaScript (ES2020/ES2021) introduced `Promise.allSettled` and `Promise.any`.
 
 ### Summary Comparison Table
+
 
 | Method                   | Main Goal        | Behavior on First Success | Behavior on First Failure |
 | :----------------------- | :--------------- | :------------------------ | :------------------------ |
