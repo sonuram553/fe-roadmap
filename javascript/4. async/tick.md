@@ -1,15 +1,14 @@
 ## What is a "Tick"?
 
 A **tick** is **one complete cycle/iteration of the Event Loop**. It represents the time it takes for the event loop to:
-1. Process all phases (in Node.js) or complete one round of checking queues (in browsers)
-2. Execute available callbacks
-3. Process microtasks
-4. Return to the beginning to start the next cycle
 
-### Simple Analogy:
-Think of the event loop as a **clock that ticks**. Each "tick" is one complete rotation of the clock hand through all its positions.
+1. Pick up one macrotask from the queue and execute it (the initial script itself is the first macrotask)
+2. Drain the microtask queue (Promises, `queueMicrotask`, MutationObserver)
+3. Run `requestAnimationFrame` callbacks — browser only
+4. Render if needed (update UI, repaint/reflow) — browser only
+5. Return to the beginning to start the next cycle
 
-### Browser Context (Frontend Interviews):
+### Browser Context:
 
 ```javascript
 console.log('Tick 1 - Start');
@@ -35,27 +34,28 @@ console.log('Tick 1 - End');
 
 ```
 ┌──────────────────────────────────────────────┐
-│              ONE TICK CYCLE                   │
+│              ONE TICK CYCLE                  │
 ├──────────────────────────────────────────────┤
-│                                               │
-│  1. Execute all SYNCHRONOUS code              │
-│     ↓                                         │
-│  2. Process ALL MICROTASKS                    │
-│     - Promise.then()                          │
-│     - queueMicrotask()                        │
-│     - MutationObserver                        │
-│     ↓                                         │
-│  3. Execute ONE MACROTASK                     │
-│     - setTimeout callback                     │
-│     - setInterval callback                    │
-│     - DOM event callback                      │
-│     ↓                                         │
-│  4. Render (if needed in browser)             │
-│     - Update UI                               │
-│     - Repaint/reflow                          │
-│     ↓                                         │
+│                                              │
+│  1. Pick up ONE MACROTASK and execute it     │
+│     - setTimeout callback                    │
+│     - setInterval callback                   │
+│     - DOM event callback                     │
+│     - script (initial macrotask)             │
+│     ↓                                        │
+│  2. Process ALL MICROTASKS                   │
+│     - Promise.then()                         │
+│     - queueMicrotask()                       │
+│     - MutationObserver                       │
+│     ↓                                        │
+│  3. requestAnimationFrame (browser only)     │
+│     ↓                                        │
+│  4. Render (if needed in browser)            │
+│     - Update UI                              │
+│     - Repaint/reflow                         │
+│     ↓                                        │
 │  5. Back to step 1 for NEXT TICK             │
-│                                               │
+│                                              │
 └──────────────────────────────────────────────┘
 ```
 
@@ -112,6 +112,7 @@ Promise.resolve().then(() => {
 ### Important Rules About Ticks:
 
 **1. Microtasks Execute in the SAME Tick**
+
 ```javascript
 console.log('Start of tick');
 
@@ -137,6 +138,7 @@ console.log('End of synchronous code');
 ```
 
 **2. Each Macrotask Starts a New Tick**
+
 ```javascript
 setTimeout(() => console.log('Tick 2'), 0);
 setTimeout(() => console.log('Tick 3'), 0);
@@ -146,6 +148,7 @@ setTimeout(() => console.log('Tick 4'), 0);
 ```
 
 **3. Microtasks Have Priority Within a Tick**
+
 ```javascript
 setTimeout(() => {
   console.log('Macrotask');
@@ -163,13 +166,16 @@ for (let i = 0; i < 1000; i++) {
 ### Node.js vs Browser Ticks:
 
 **Node.js Tick (More Complex):**
+
 - Has 6 distinct phases: timers → pending callbacks → idle → poll → check → close
 - One "tick" = one complete cycle through all 6 phases
 - Microtasks processed after EACH phase
 
 **Browser Tick (Simpler):**
-- Execute one macrotask
-- Execute ALL microtasks
+
+- Pick up one macrotask and execute it
+- Drain all microtasks
+- Run requestAnimationFrame callbacks
 - Render (if needed)
 - Repeat
 
@@ -182,6 +188,7 @@ for (let i = 0; i < 1000; i++) {
 **Q: How is `process.nextTick()` different from `setTimeout(fn, 0)`?**
 
 **A (Node.js context):**
+
 ```javascript
 // process.nextTick() executes in the CURRENT tick (after synchronous code)
 process.nextTick(() => {
@@ -201,6 +208,7 @@ console.log('1. Synchronous');
 **Q: Can microtasks delay the next tick indefinitely?**
 
 **A:** YES! This is called "microtask starvation":
+
 ```javascript
 function infiniteMicrotasks() {
   Promise.resolve().then(() => {
@@ -215,57 +223,6 @@ infiniteMicrotasks();
 setTimeout(() => {
   console.log('This will never run!');
 }, 0);
-```
-
-### Practical Tick Example:
-
-```javascript
-console.log('=== TICK 1 START ===');
-console.log('A');
-
-setTimeout(() => {
-  console.log('=== TICK 2 START ===');
-  console.log('B');
-  
-  Promise.resolve().then(() => {
-    console.log('C (microtask in tick 2)');
-  });
-  
-  console.log('=== TICK 2 END ===');
-}, 0);
-
-Promise.resolve().then(() => {
-  console.log('D (microtask in tick 1)');
-  
-  setTimeout(() => {
-    console.log('=== TICK 3 START ===');
-    console.log('E');
-    console.log('=== TICK 3 END ===');
-  }, 0);
-  
-  Promise.resolve().then(() => {
-    console.log('F (nested microtask in tick 1)');
-  });
-});
-
-console.log('G');
-console.log('=== TICK 1 END ===');
-
-/* Output:
-=== TICK 1 START ===
-A
-G
-=== TICK 1 END ===
-D (microtask in tick 1)
-F (nested microtask in tick 1)
-=== TICK 2 START ===
-B
-=== TICK 2 END ===
-C (microtask in tick 2)
-=== TICK 3 START ===
-E
-=== TICK 3 END ===
-*/
 ```
 
 ### Memory Aid for Interviews:
@@ -290,6 +247,4 @@ Next Tick:
 - **Next tick** = After current synchronous code + microtasks complete
 - **Microtasks** don't create new ticks (same tick)
 - **Macrotasks** create new ticks (next tick)
-- Understanding ticks helps predict execution order in async code
 
-This concept is **crucial** for frontend interviews because it explains why Promise callbacks execute before setTimeout callbacks, even when setTimeout is scheduled first! 🎯
