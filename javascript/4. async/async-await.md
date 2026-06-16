@@ -1,4 +1,4 @@
-To understand how to manage API requests efficiently, you first need to understand the mechanics of **async/await**. This syntax allows you to write asynchronous code (tasks that take time, like network requests) that reads like synchronous, top-to-bottom code.
+**async/await** syntax allows you to write asynchronous code that reads like synchronous, top-to-bottom code.
 
 ---
 
@@ -6,10 +6,11 @@ To understand how to manage API requests efficiently, you first need to understa
 
 In JavaScript, an `async` function always returns a **Promise**. The `await` keyword pauses the execution of that specific function until the Promise is settled (resolved or rejected).
 
-* **Async:** Tells the engine, "This function will perform tasks in the background."
-* **Await:** Tells the engine, "Wait here until this specific background task is finished before moving to the next line."
+- **Async:** Tells the engine, "This function will perform tasks in the background."
+- **Await:** Tells the engine, "Wait here until this specific background task is finished before moving to the next line."
 
 ### The Syntax
+
 ```javascript
 async function getUserData() {
   // The code "pauses" at await, but the main thread stays free
@@ -26,12 +27,11 @@ async function getUserData() {
 The way you use `await` determines whether your requests happen one after another or all at once.
 
 ### **Sequential Requests (One-by-One)**
+
 In a sequential flow, you `await` each request before starting the next one. This is necessary **only if** the second request depends on data from the first.
 
-* **Behavior:** Request A starts → finishes → Request B starts → finishes.
-* **Total Time:** Time(A) + Time(B).
-
-
+- **Behavior:** Request A starts → finishes → Request B starts → finishes.
+- **Total Time:** Time(A) + Time(B).
 
 ```javascript
 async function getSequential() {
@@ -42,11 +42,12 @@ async function getSequential() {
 ```
 
 ### **Parallel Requests (All at Once)**
+
 In a parallel flow, you initiate all requests simultaneously. This is the best practice when the requests are independent.
 
-* **Behavior:** Request A and Request B start at the same time.
-* **Total Time:** Max(Time(A), Time(B)).
-* **Method:** Usually handled via `Promise.all()`.
+- **Behavior:** Request A and Request B start at the same time.
+- **Total Time:** Max(Time(A), Time(B)).
+- **Method:** Usually handled via `Promise.all()`.
 
 ```javascript
 async function getParallel() {
@@ -65,6 +66,7 @@ async function getParallel() {
 ## 3. Error Handling
 
 ### **try/catch (Sequential)**
+
 Wrap `await` calls in a `try/catch` block to handle errors, just like synchronous code.
 
 ```javascript
@@ -80,6 +82,7 @@ async function getUserData() {
 ```
 
 ### **Promise.all with try/catch (Parallel)**
+
 `Promise.all` rejects immediately if **any** promise fails. Wrap it in `try/catch` to handle the failure.
 
 ```javascript
@@ -97,6 +100,7 @@ async function getParallel() {
 ```
 
 ### **Promise.allSettled (Independent Failures)**
+
 Use `Promise.allSettled` when you want all requests to complete regardless of individual failures.
 
 ```javascript
@@ -115,3 +119,4 @@ async function getParallelSafe() {
   });
 }
 ```
+
