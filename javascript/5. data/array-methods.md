@@ -37,8 +37,8 @@ arr.toString()
 
 ```javascript
 // Add/Remove
-arr.push(element); // Add to end
-arr.pop(); // Remove from end
+arr.push(element);
+arr.pop();
 arr.unshift(element); // Add to start
 arr.shift(); // Remove from start
 arr.splice(start, deleteCount, ...items);
@@ -160,26 +160,14 @@ arr.reduce((accumulator, currentValue) => {
 [1, 2, 3]
   .reduce((acc, curr) => acc + curr, 0) // 6
 
-  [
-    // Count occurrences
-    ("a", "b", "a")
-  ].reduce((acc, item) => {
+// Count occurrences
+["a", "b", "a"].reduce((acc, item) => {
     acc[item] = (acc[item] || 0) + 1;
     return acc;
   }, {}) // { a: 2, b: 1 }
 
-  [
-    // Flatten
-    ([1, 2], [3, 4])
-  ].reduce((acc, curr) => acc.concat(curr), []); // [1, 2, 3, 4]
-
-// Group by property
-people.reduce((acc, person) => {
-  const key = person.age;
-  acc[key] = acc[key] || [];
-  acc[key].push(person);
-  return acc;
-}, {});
+// Flatten
+[[1, 2], [3, 4]].reduce((acc, curr) => acc.concat(curr), []); // [1, 2, 3, 4]
 ```
 
 **Important:** Always return the accumulator and provide `initialValue` to avoid errors with empty arrays
@@ -195,3 +183,4 @@ people.reduce((acc, person) => {
 [5].reduce((acc, curr) => acc + curr)        // 5 (callback never called)
 [].reduce((acc, curr) => acc + curr)         // ❌ TypeError!
 ```
+
