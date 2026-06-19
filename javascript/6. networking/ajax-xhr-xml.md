@@ -37,6 +37,10 @@ xhr.open("GET", "https://api.example.com/data");
 // SUCCESS: Triggered when the request completes successfully
 xhr.onload = function () {
   if (xhr.status === 200) {
+    // JSON.parse is correct here — despite the name "XMLHttpRequest", XHR is a
+    // general-purpose HTTP mechanism. "XML" is historical baggage from its early
+    // 2000s origins. Today it's almost always used to fetch JSON.
+    // If you were fetching actual XML, you'd use xhr.responseXML instead.
     console.log("Success!", JSON.parse(xhr.response));
   } else {
     // This handles cases like 404 or 500
