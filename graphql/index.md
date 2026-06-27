@@ -1,3 +1,0 @@
-- What is Schema?
-- What is root query?
-- Compare Apollo client and Relay
