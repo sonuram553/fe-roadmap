@@ -1,0 +1,524 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Base64 in Practice</title>
+    <style>
+      :root {
+        --bg: #090e1b;
+        --surface: #121929;
+        --card: #1c2840;
+        --border: #253352;
+        --text: #c8d6f0;
+        --muted: #4e6490;
+        --accent: #f0953a;
+        --accent-bg: rgba(240, 149, 58, 0.1);
+        --accent-bdr: rgba(240, 149, 58, 0.28);
+        --ok: #3dcc7e;
+        --ok-bg: #0a1e14;
+        --ok-bdr: rgba(61, 204, 126, 0.18);
+        --err: #f06060;
+        --err-bg: rgba(240, 96, 96, 0.07);
+        --err-bdr: rgba(240, 96, 96, 0.22);
+        --mono: ui-monospace, "Cascadia Code", "Fira Code", monospace;
+        --sans: system-ui, -apple-system, sans-serif;
+        --r: 8px;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--sans);
+        font-size: 14px;
+        line-height: 1.6;
+        min-height: 100vh;
+        padding: 48px 20px 80px;
+      }
+
+      /* ── Header ─────────────────────────────── */
+      header {
+        max-width: 900px;
+        margin: 0 auto 44px;
+        padding-bottom: 24px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .eyebrow {
+        font-family: var(--mono);
+        font-size: 11px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin-bottom: 6px;
+      }
+
+      h1 {
+        font-size: 26px;
+        font-weight: 700;
+        letter-spacing: -0.025em;
+        color: var(--text);
+      }
+
+      .subtitle {
+        color: var(--muted);
+        font-size: 13px;
+        margin-top: 4px;
+      }
+
+      /* ── Grid ────────────────────────────────── */
+      .grid {
+        max-width: 900px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+
+      @media (max-width: 620px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .wide {
+        grid-column: 1 / -1;
+      }
+
+      /* ── Card ────────────────────────────────── */
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--r);
+        display: flex;
+        flex-direction: column;
+      }
+
+      .card-head {
+        padding: 14px 18px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .badge {
+        width: 30px;
+        height: 30px;
+        border-radius: 6px;
+        background: var(--accent-bg);
+        border: 1px solid var(--accent-bdr);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        font-size: 13px;
+      }
+
+      .card-title {
+        font-size: 13px;
+        font-weight: 600;
+      }
+      .card-desc {
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 1px;
+      }
+
+      .card-body {
+        padding: 16px 18px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        flex: 1;
+      }
+
+      /* ── Form elements ───────────────────────── */
+      .field-label {
+        display: block;
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.09em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 5px;
+      }
+
+      textarea,
+      input[type="text"] {
+        width: 100%;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        color: var(--text);
+        font-family: var(--mono);
+        font-size: 12px;
+        padding: 9px 11px;
+        resize: vertical;
+        outline: none;
+        transition: border-color 0.15s;
+        line-height: 1.5;
+      }
+
+      textarea:focus,
+      input[type="text"]:focus {
+        border-color: var(--accent);
+      }
+
+      textarea {
+        min-height: 72px;
+      }
+
+      /* ── Output ──────────────────────────────── */
+      .out {
+        background: var(--ok-bg);
+        border: 1px solid var(--ok-bdr);
+        border-radius: 6px;
+        padding: 9px 11px;
+        font-family: var(--mono);
+        font-size: 12px;
+        color: var(--ok);
+        word-break: break-all;
+        white-space: pre-wrap;
+        min-height: 38px;
+        line-height: 1.5;
+      }
+
+      .out.err {
+        background: var(--err-bg);
+        border-color: var(--err-bdr);
+        color: var(--err);
+      }
+
+      /* ── Arrow divider ───────────────────────── */
+      .flow {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-family: var(--mono);
+        font-size: 10px;
+        color: var(--muted);
+        letter-spacing: 0.06em;
+      }
+
+      .flow::before,
+      .flow::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: var(--border);
+      }
+
+      /* ── Button ──────────────────────────────── */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        background: var(--accent-bg);
+        border: 1px solid var(--accent-bdr);
+        color: var(--accent);
+        font-family: var(--mono);
+        font-size: 12px;
+        padding: 7px 13px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition:
+          background 0.15s,
+          border-color 0.15s;
+        user-select: none;
+      }
+
+      .btn:hover {
+        background: rgba(240, 149, 58, 0.18);
+        border-color: rgba(240, 149, 58, 0.45);
+      }
+
+      /* ── File input ──────────────────────────── */
+      input[type="file"] {
+        display: none;
+      }
+
+      /* ── Image preview ───────────────────────── */
+      .img-preview {
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        background: var(--surface);
+        min-height: 90px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+      }
+
+      .img-preview img {
+        max-width: 100%;
+        max-height: 180px;
+        display: block;
+      }
+
+      .img-placeholder {
+        color: var(--muted);
+        font-family: var(--mono);
+        font-size: 12px;
+      }
+
+      /* ── JWT parts ───────────────────────────── */
+      .jwt-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 10px;
+      }
+
+      @media (max-width: 620px) {
+        .jwt-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .jwt-part {
+        border-radius: 6px;
+        overflow: hidden;
+      }
+
+      .jwt-label {
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.09em;
+        text-transform: uppercase;
+        font-weight: 700;
+        padding: 5px 10px;
+      }
+
+      .jwt-content {
+        padding: 8px 10px;
+        font-family: var(--mono);
+        font-size: 11px;
+        white-space: pre;
+        overflow-x: auto;
+        line-height: 1.55;
+        min-height: 60px;
+      }
+
+      .jwt-part-h .jwt-label {
+        background: rgba(99, 179, 255, 0.14);
+        color: #63b3ff;
+      }
+      .jwt-part-h .jwt-content {
+        background: rgba(99, 179, 255, 0.05);
+        color: #a8cfff;
+      }
+
+      .jwt-part-p .jwt-label {
+        background: rgba(61, 204, 126, 0.14);
+        color: var(--ok);
+      }
+      .jwt-part-p .jwt-content {
+        background: rgba(61, 204, 126, 0.05);
+        color: #90dfb0;
+      }
+
+      .jwt-part-s .jwt-label {
+        background: var(--accent-bg);
+        color: var(--accent);
+      }
+      .jwt-part-s .jwt-content {
+        background: rgba(240, 149, 58, 0.04);
+        color: #e0a870;
+        word-break: break-all;
+        white-space: pre-wrap;
+      }
+
+      /* ── btoa side-by-side ───────────────────── */
+      .btoa-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+
+      @media (max-width: 620px) {
+        .btoa-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .tag {
+        display: inline-block;
+        font-family: var(--mono);
+        font-size: 10px;
+        padding: 2px 7px;
+        border-radius: 4px;
+        margin-bottom: 6px;
+      }
+
+      .tag-err {
+        background: var(--err-bg);
+        color: var(--err);
+        border: 1px solid var(--err-bdr);
+      }
+      .tag-ok {
+        background: var(--ok-bg);
+        color: var(--ok);
+        border: 1px solid var(--ok-bdr);
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <p class="eyebrow">JavaScript · Encoding</p>
+      <h1>Base64 in Practice</h1>
+      <p class="subtitle">Four interactive demos for the main use cases</p>
+    </header>
+
+    <div class="grid">
+      <!-- 1. Text encode/decode -->
+      <div class="card">
+        <div class="card-head">
+          <div class="badge">⇄</div>
+          <div>
+            <div class="card-title">Text ↔ Base64</div>
+            <div class="card-desc">Encode and decode any string</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div>
+            <label class="field-label" for="enc-in">Input</label>
+            <textarea id="enc-in">Hello 世界 😀</textarea>
+          </div>
+          <div class="flow">encoded</div>
+          <div>
+            <label class="field-label">Base64</label>
+            <div class="out" id="enc-out"></div>
+          </div>
+          <div class="flow">decoded</div>
+          <div>
+            <label class="field-label">Round-trip</label>
+            <div class="out" id="dec-out"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Image → Data URL -->
+      <div class="card">
+        <div class="card-head">
+          <div class="badge">◻</div>
+          <div>
+            <div class="card-title">Image → Data URL</div>
+            <div class="card-desc">Embed an image as Base64 in HTML/CSS</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div>
+            <label class="field-label">Choose image</label>
+            <label for="file-in">
+              <span class="btn">Choose file</span>
+            </label>
+            <input type="file" id="file-in" accept="image/*" />
+          </div>
+          <div>
+            <label class="field-label">Rendered from data URL</label>
+            <div class="img-preview" id="img-preview">
+              <span class="img-placeholder">no image selected</span>
+            </div>
+          </div>
+          <div>
+            <label class="field-label">Data URL (truncated)</label>
+            <div
+              class="out"
+              id="data-url-out"
+              style="font-size: 10px; max-height: 68px; overflow: auto"
+            >
+              —
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. JWT Inspector -->
+      <div class="card wide">
+        <div class="card-head">
+          <div class="badge">#</div>
+          <div>
+            <div class="card-title">JWT Inspector</div>
+            <div class="card-desc">
+              Header and payload are Base64url-encoded (uses
+              <code style="font-size: 11px">-</code> and
+              <code style="font-size: 11px">_</code> instead of
+              <code style="font-size: 11px">+</code> and
+              <code style="font-size: 11px">/</code>)
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div>
+            <label class="field-label" for="jwt-in">JWT Token</label>
+            <textarea id="jwt-in" style="min-height: 56px; font-size: 11px">
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c</textarea
+            >
+          </div>
+          <div class="jwt-grid" id="jwt-parts"></div>
+        </div>
+      </div>
+
+      <!-- 4. btoa() limitation -->
+      <div class="card wide">
+        <div class="card-head">
+          <div class="badge">!</div>
+          <div>
+            <div class="card-title">btoa() Limitation</div>
+            <div class="card-desc">
+              btoa() only handles Latin-1 — non-ASCII needs a TextEncoder
+              workaround
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div>
+            <label class="field-label" for="btoa-in"
+              >Input (try adding emoji)</label
+            >
+            <input type="text" id="btoa-in" value="Hello 😀" />
+          </div>
+          <div class="btoa-grid">
+            <div>
+              <span class="tag tag-err">btoa() — broken</span>
+              <div class="out err" id="btoa-raw"></div>
+              <div
+                style="
+                  margin-top: 6px;
+                  font-size: 11px;
+                  color: var(--muted);
+                  font-family: var(--mono);
+                "
+              >
+                btoa(input)
+              </div>
+            </div>
+            <div>
+              <span class="tag tag-ok">TextEncoder — works</span>
+              <div class="out" id="btoa-fix"></div>
+              <div
+                style="
+                  margin-top: 6px;
+                  font-size: 11px;
+                  color: var(--muted);
+                  font-family: var(--mono);
+                "
+              >
+                toBase64(input)
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="base64-demo.js"></script>
+  </body>
+</html>
