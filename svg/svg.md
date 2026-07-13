@@ -81,3 +81,30 @@ This is used for shapes with multiple straight sides, like triangles or stars. Y
 | **Ellipse** | `cx`, `cy`, `rx`, `ry` | Like a circle, but with different horizontal/vertical radii. |
 | **Line**    | `x1, y1`, `x2, y2`     | The start and end "anchors."                                 |
 | **Polygon** | `points`               | A string of connected $(x, y)$ coordinates.                  |
+
+---
+
+### The `viewBox` Attribute
+
+`viewBox` defines the internal coordinate system of an SVG — it decides what part of your drawing is visible and how it maps to the actual rendered size (set by the `width`/`height` on the `<svg>` tag).
+
+```html
+<svg viewBox="min-x min-y width height">
+```
+
+- **min-x, min-y:** The top-left corner of the visible area (the "camera" position).
+- **width, height:** How much of the coordinate space is visible (the "zoom level").
+
+```html
+<svg width="200" height="200" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="40" fill="coral" />
+</svg>
+```
+
+Here the SVG is rendered at 200×200 pixels on the page, but internally you're drawing on a 100×100 grid. Everything you draw gets scaled up 2x to fit. This is why the circle (radius 40, centered at 50,50) fills most of the box even though its numbers look small.
+
+**Why it matters:**
+
+- **Responsive scaling:** Without `width`/`height` (or with them set to `100%`), the SVG scales to fill its container while `viewBox` keeps the internal proportions and coordinates consistent.
+- **Panning/zooming:** Changing `min-x`/`min-y` pans the view; shrinking `width`/`height` (relative to the element's actual size) zooms in, since the same content now covers more rendered pixels.
+- **Decoupling drawing units from display size:** You can design at any convenient scale (e.g. a 24x24 icon grid) and let `viewBox` handle scaling it to however large it's displayed.
