@@ -4,16 +4,10 @@
 
 An SVG `<circle>` has two key stroke properties that make this possible:
 
-- **`stroke-dasharray`** — sets the length of dashes in the stroke pattern
+- **`stroke-dasharray`** — sets the length of dashes in the stroke pattern. It's named "dash-array" because the value is a list (array) of alternating dash/gap lengths — e.g. `"10 5"` draws a 10px dash, skips 5px, repeats.
 - **`stroke-dashoffset`** — shifts the start of the dash pattern along the stroke
 
 By setting `stroke-dasharray` equal to the circle's circumference, the entire stroke becomes one single dash. Then adjusting `stroke-dashoffset` controls how much of that dash is visible — which creates the progress effect.
-
-## The math
-
-```
-circumference = 2 × π × radius
-```
 
 To show `p%` progress:
 
@@ -136,13 +130,3 @@ export function CircularProgress({
 ```tsx
 <CircularProgress percent={75} />
 ```
-
-## Key properties reference
-
-| Property | Purpose |
-|---|---|
-| `stroke-dasharray` | Set to circumference — makes the whole stroke one dash |
-| `stroke-dashoffset` | Controls how much is hidden; drives the progress value |
-| `stroke-linecap="round"` | Rounds the ends of the arc |
-| `transform="rotate(-90)"` | Rotates start point to 12 o'clock |
-| `fill="none"` | Removes the circle's fill so only the stroke shows |
