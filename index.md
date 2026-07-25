@@ -1,6 +1,4 @@
-Event Based Architecture
-
-Top level await in JS
+JS modules
 
 File CRUD with nodejs
 
