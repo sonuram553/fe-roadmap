@@ -1,5 +1,3 @@
-JS modules
-
 File CRUD with nodejs
 
 Forms overall workings
