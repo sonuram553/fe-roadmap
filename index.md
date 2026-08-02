@@ -1,5 +1,3 @@
-File CRUD with nodejs
-
 Forms overall workings
 
 How to randomly generate ids via crypto nodejs module, where it'll be used.
