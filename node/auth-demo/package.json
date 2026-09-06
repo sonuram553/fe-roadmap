@@ -1,0 +1,16 @@
+{
+  "name": "auth-demo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Hands-on end-to-end demos of session/cookie auth and JWT auth",
+  "scripts": {
+    "session": "node session-auth/server.js",
+    "jwt": "node jwt-auth/server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "express-session": "^1.18.0",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2"
+  }
+}
