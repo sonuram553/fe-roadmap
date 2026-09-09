@@ -149,6 +149,27 @@ Properties of a good salt:
 You do **not** implement this yourself: bcrypt, scrypt and Argon2 generate
 the salt and pack it into the output string for you.
 
+### What that packed string looks like
+
+`bcrypt.hash("hunter2", 10)` returns 60 characters that describe themselves:
+
+```
+$2a$ 10$ N9qo8uLOickgx2ZMRZoMye IjZAgcfl7p92ldGxad68LJZdL17lhWy
+│    │   └── the salt (22 ch) ─┘ └────── the hash (31 ch) ─────┘
+│    └── cost: 2¹⁰ rounds
+└── algorithm version
+```
+
+This is the whole reason your user table needs a single `passwordHash`
+column and nothing else — no salt column, no cost column. At login,
+`bcrypt.compare(password, hash)` reads the version, cost and salt back out
+of the string, redoes exactly the same work on the submitted password, and
+checks whether it lands on the same final 31 characters.
+
+It also means the cost is recorded **per hash**, not globally. Raise the cost
+next year and old users keep verifying against their old cost until they
+next log in — which is the moment to quietly re-hash at the new one.
+
 ---
 
 ## 6. The algorithms you should use
