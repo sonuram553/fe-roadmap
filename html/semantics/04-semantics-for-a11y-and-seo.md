@@ -84,7 +84,7 @@ Arun's jumps, and what each one needs from your markup:
 
 The first three are all structure. That's why "it looks the same, so what's the harm" misses: the harm isn't in how it reads, it's that *there's nothing to navigate by*, so everything becomes the fourth mode.
 
-The same structure quietly serves other people too. [Voice control](glossary.md#voice-control) users say "click Submit" — which works because the button has an accessible name. Keyboard users get focus order and Enter/Space handling from real `<button>`s and `<a href>`s. Someone with a cognitive disability using a reading tool gets a usable outline.
+The same structure quietly serves other people too. [Voice control](../glossary.md#voice-control) users say "click Submit" — which works because the button has an accessible name. Keyboard users get focus order and Enter/Space handling from real `<button>`s and `<a href>`s. Someone with a cognitive disability using a reading tool gets a usable outline.
 
 ---
 

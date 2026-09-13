@@ -26,7 +26,7 @@ Three different readers, wanting three different things.
 
 **The browser** uses the label to pick default behaviour. `<button>` is focusable, fires on Enter *and* Space, and submits its form. `<a href>` is focusable, fires on Enter only, and navigates. A `<div onclick>` does none of that — you get to reimplement all of it, and you will forget some of it.
 
-**Assistive technology** — screen readers, [voice control](glossary.md#voice-control), [switch devices](glossary.md#switch-device) — doesn't read your HTML at all. It reads a second tree the browser builds from your HTML, called the **accessibility tree**, where each node carries a *role* ("this is a button"), a *name* ("Submit"), and a *state* ("pressed"). Semantic elements get real roles for free. `<div>` gets the role `generic`, which is the accessibility tree's way of saying STUFF. See [04-semantics-for-a11y-and-seo.md](04-semantics-for-a11y-and-seo.md) §1.
+**Assistive technology** — screen readers, [voice control](../glossary.md#voice-control), [switch devices](../glossary.md#switch-device) — doesn't read your HTML at all. It reads a second tree the browser builds from your HTML, called the **accessibility tree**, where each node carries a *role* ("this is a button"), a *name* ("Submit"), and a *state* ("pressed"). Semantic elements get real roles for free. `<div>` gets the role `generic`, which is the accessibility tree's way of saying STUFF. See [04-semantics-for-a11y-and-seo.md](04-semantics-for-a11y-and-seo.md) §1.
 
 **Machines that aren't browsers** — crawlers, reader modes, the thing that generates a link preview in Slack — read the markup and guess at structure.
 
@@ -42,7 +42,7 @@ The labels split into two families by size. Some wrap *regions* of a page — th
 | Text-level | `em`, `strong`, `i`, `b`, `mark`, `small`, `cite`, `abbr`, `code`, `time`, … | "what kind of phrase is this?" | [03-text-level-semantics.md](03-text-level-semantics.md) |
 | Generic | `div`, `span` | nothing, on purpose | [02-sectioning-elements.md](02-sectioning-elements.md) §1 |
 
-There is one more family this note doesn't cover — forms, tables, media, `<details>` — which are semantic too, and are where the browser gives you the most free behaviour. They have their own entries in [index.md](index.md).
+There is one more family this note doesn't cover — forms, tables, media, `<details>` — which are semantic too, and are where the browser gives you the most free behaviour. They have their own entries in [index.md](../index.md).
 
 ---
 
