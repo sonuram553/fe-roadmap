@@ -8,7 +8,7 @@ Glossary: [glossary.md](glossary.md)
 3. Why does semantic HTML matter for SEO and accessibility, beyond just "best practice"?
 4. When would you use `<b>` vs `<strong>`, or `<i>` vs `<em>`? What's actually different under the hood?
 
-**Forms**
+**Forms** — notes: [what a form is](forms/01-forms-and-submission.md) · [native validation](forms/02-native-validation.md) · [button types](forms/03-button-types.md) · [labelling controls](forms/04-labelling-form-controls.md)
 5. How does form validation work natively (required, pattern, min/max) vs. via JS? What are the pros/cons of relying on native validation?
 6. What's the difference between `<button type="submit">`, `type="button"`, and `type="reset"`? What happens if you omit `type` inside a `<form>`?
 7. How do you handle accessible labeling for form inputs (`<label for>` vs wrapping vs `aria-label`)?
@@ -37,3 +37,12 @@ Glossary: [glossary.md](glossary.md)
 A few of these (15, 16, 20) tend to be the ones that actually separate senior candidates from mid-level — interviewers use them to probe whether you understand *why* HTML behaves the way it does, not just what the tags do.
 
 Want me to go deeper on any of these — like a full explanation of the rendering pipeline (#15), or a mock Q&A format you can rehearse with?
+
+
+
+
+- Dissect the html skeleton.
+
+- Talk about form controls states - dirty, pristine, touched, valid, invalid
+
+- How to use form without native validation turned on.
