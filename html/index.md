@@ -38,11 +38,3 @@ A few of these (15, 16, 20) tend to be the ones that actually separate senior ca
 
 Want me to go deeper on any of these — like a full explanation of the rendering pipeline (#15), or a mock Q&A format you can rehearse with?
 
-
-
-
-- Dissect the html skeleton.
-
-- Talk about form controls states - dirty, pristine, touched, valid, invalid
-
-- How to use form without native validation turned on.
