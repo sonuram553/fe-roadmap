@@ -1,0 +1,46 @@
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  background: #fafafa;
+  color: #222;
+}
+
+main {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 24px 16px;
+}
+
+.columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+h2 {
+  font-size: 16px;
+}
+
+.box {
+  height: 120px;
+  border: 2px solid #999;
+  background: white;
+}
+
+/* Two editors in one box: let the second one spill out below so it can be seen. */
+#naive {
+  overflow: visible;
+}
+
+.totals {
+  margin: 16px 0;
+}
+
+.bad {
+  color: #c00;
+}
+
+button {
+  padding: 6px 12px;
+  font-size: 14px;
+}
