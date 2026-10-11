@@ -168,7 +168,7 @@ fetch("/api/data", { headers });
 
 - `Content-Type`: MIME type of the body
 - `Content-Length`: Size of the body in bytes
-- `Content-Encoding`: Compression used (gzip, deflate)
+- `Content-Encoding`: Compression used (gzip, deflate) — see [compression.md](javascript/6.%20networking/compression.md)
 
 #### Authentication Headers
 
