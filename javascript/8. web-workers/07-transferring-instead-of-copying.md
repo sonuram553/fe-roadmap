@@ -108,7 +108,7 @@ He only meant to send the photo, but `photo.buffer` is the *whole* buffer, so th
 
   Same pattern: the page's copy is emptied to 0 × 0, and the worker has the real thing. `createImageBitmap(file)` decodes a JPEG off the main thread, and transferring the result is a cheap way to get a photo into a worker without ever touching its pixels on the page.
 
-- **`OffscreenCanvas`**, which lets a worker draw straight onto a canvas on the page. That gets its own lesson, [lesson 10](10-offscreen-canvas.md).
+- **`OffscreenCanvas`**, which lets a worker draw straight onto a canvas on the page. That gets its own lesson, [lesson 9](09-offscreen-canvas.md).
 
 `structuredClone` takes a transfer list too, `structuredClone(value, { transfer: [buffer] })`, which moves a buffer to a new owner on the same thread. It's occasionally handy for making sure no other code still has access to some data.
 

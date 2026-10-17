@@ -26,7 +26,7 @@ missing: window, document, localStorage, sessionStorage, alert
 
 The missing list is short and it is all about the page: no `window`, no `document` (so no elements, no `querySelector`, no events on buttons), no `localStorage` or `sessionStorage`, no `alert`. Everything else is there. A worker can make network requests, open WebSockets, read and write IndexedDB, use timers and `crypto`, and even start workers of its own.
 
-Two surprises in the available list. `requestAnimationFrame` exists in a dedicated worker in Chrome, which only makes sense once the worker has something to draw on; [lesson 10](10-offscreen-canvas.md) gives it one. And `OffscreenCanvas` means a worker can draw and encode images without any page canvas at all.
+Two surprises in the available list. `requestAnimationFrame` exists in a dedicated worker in Chrome, which only makes sense once the worker has something to draw on; [lesson 9](09-offscreen-canvas.md) gives it one. And `OffscreenCanvas` means a worker can draw and encode images without any page canvas at all.
 
 `localStorage` is missing because it is synchronous: reading it blocks until the value is there, and letting several threads block on the same storage would cause exactly the problems workers are meant to avoid. If a worker needs a saved setting, the page can read it and send it in a message, or both sides can use IndexedDB, which is asynchronous and works in both.
 
@@ -38,7 +38,7 @@ In a worker, the global object is `self`. The same worker also reported:
 scope: DedicatedWorkerGlobalScope | self === globalThis: true | name: blur-crew
 ```
 
-`self` and `globalThis` are the same object, so `self.onmessage = …` and plain `onmessage = …` do the same thing. Its type is `DedicatedWorkerGlobalScope`: "dedicated" because it belongs to the one page that created it (a shared worker, in [lesson 11](11-shared-workers.md), has a different scope).
+`self` and `globalThis` are the same object, so `self.onmessage = …` and plain `onmessage = …` do the same thing. Its type is `DedicatedWorkerGlobalScope`: "dedicated" because it belongs to the one page that created it (a shared worker, in [lesson 10](10-shared-workers.md), has a different scope).
 
 The name came from an option Kabir passed when creating it:
 

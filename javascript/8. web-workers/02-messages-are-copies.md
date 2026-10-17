@@ -24,7 +24,7 @@ worker got radius 4
 
 The copy was taken the moment `postMessage` was called, so the change on the next line never reached the worker. He then had the worker send the object straight back and compared it with the original: `back.tags === edit.tags` printed `false`. Two separate objects with the same contents.
 
-This is the whole reason workers are safe to use. Two threads never touch the same object, so there is nothing to lock and nothing for one thread to change under the other's feet. ([Lesson 9](09-shared-memory-and-atomics.md) covers the one exception, and why it needs special care.)
+This is the whole reason workers are safe to use. Two threads never touch the same object, so there is nothing to lock and nothing for one thread to change under the other's feet.
 
 ## 2. What survives the copy
 

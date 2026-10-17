@@ -19,8 +19,6 @@ You can't get at those bytes directly. `buffer[0]` is `undefined`, and there's n
 
 Think of the pan from lesson 7 as a muffin pan with 16 cups. The `ArrayBuffer` is the pan. To put something into a cup, or see what's in one, you need a view.
 
-There's also `SharedArrayBuffer`, a pan both threads hold at the same time, covered in [lesson 9](09-shared-memory-and-atomics.md). This note is about the ordinary kind, which has one owner at a time.
-
 ## 2. Views: frames laid over the cups
 
 ```js

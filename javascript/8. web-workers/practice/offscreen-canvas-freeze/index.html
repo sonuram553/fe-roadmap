@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Freeze the main thread</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 2rem; background: #111; color: #eee; }
+    .stages { display: flex; gap: 2rem; flex-wrap: wrap; }
+    figure { margin: 0; }
+    figcaption { margin-top: 0.5rem; }
+    button { margin-top: 1.5rem; font-size: 1rem; padding: 0.6rem 1rem; cursor: pointer; }
+    #result { min-height: 3rem; white-space: pre-line; }
+  </style>
+</head>
+<body>
+  <h1>Freeze the main thread</h1>
+
+  <div class="stages">
+    <figure>
+      <canvas id="main-canvas" width="300" height="220"></canvas>
+      <figcaption>Drawn by the <strong>main thread</strong></figcaption>
+    </figure>
+    <figure>
+      <canvas id="worker-canvas" width="300" height="220"></canvas>
+      <figcaption>Drawn by a <strong>worker</strong> (OffscreenCanvas)</figcaption>
+    </figure>
+  </div>
+
+  <button id="freeze">Freeze the main thread for 2 seconds</button>
+  <p id="result"></p>
+
+  <script>
+    const FREEZE_MS = 2000;
+
+    // ── Left: the same animation, on the main thread ──────────────
+    const mainCtx = document.getElementById('main-canvas').getContext('2d');
+    let mainFrames = 0, mainAngle = 0;
+
+    function drawMain() {
+      drawSpinner(mainCtx, mainAngle += 0.05, mainFrames++, 'main thread');
+      requestAnimationFrame(drawMain);
+    }
+    requestAnimationFrame(drawMain);
+
+    // ── Right: hand the canvas to a worker ────────────────────────
+    const canvas = document.getElementById('worker-canvas');
+    const offscreen = canvas.transferControlToOffscreen();
+    const worker = new Worker('render-worker.js');
+    worker.postMessage({ type: 'init', canvas: offscreen }, [offscreen]);
+
+    function workerFrameCount() {
+      return new Promise((resolve) => {
+        worker.onmessage = (e) => resolve(e.data.frames);
+        worker.postMessage({ type: 'count' });
+      });
+    }
+
+    // ── The button: block the main thread with a busy loop ────────
+    const result = document.getElementById('result');
+
+    document.getElementById('freeze').addEventListener('click', async () => {
+      result.textContent = 'Freezing…';
+      // let "Freezing…" reach the screen before the freeze starts
+      await new Promise((r) => requestAnimationFrame(() => setTimeout(r, 0)));
+
+      const workerBefore = await workerFrameCount();
+      const mainBefore = mainFrames;
+
+      const end = performance.now() + FREEZE_MS;
+      while (performance.now() < end) {}   // nothing else can run on this thread now
+
+      const mainDuring = mainFrames - mainBefore;
+      const workerDuring = (await workerFrameCount()) - workerBefore;
+
+      const line = `worker drew ${workerDuring} frames while the main thread was frozen for ${FREEZE_MS / 1000} s\n` +
+                   `main thread drew ${mainDuring} frames while frozen for ${FREEZE_MS / 1000} s`;
+      result.textContent = line;
+      console.log(line);
+    });
+
+    // Shared drawing code (render-worker.js has its own copy)
+    function drawSpinner(ctx, angle, frames, label) {
+      const { width, height } = ctx.canvas;
+      ctx.fillStyle = '#222';
+      ctx.fillRect(0, 0, width, height);
+      ctx.save();
+      ctx.translate(width / 2, height / 2);
+      ctx.rotate(angle);
+      ctx.fillStyle = 'orange';
+      ctx.fillRect(-40, -40, 80, 80);
+      ctx.restore();
+      ctx.fillStyle = '#eee';
+      ctx.font = '14px system-ui, sans-serif';
+      ctx.fillText(`${label} · frame ${frames}`, 10, 20);
+    }
+  </script>
+</body>
+</html>

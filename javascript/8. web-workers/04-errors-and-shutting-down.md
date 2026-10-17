@@ -165,6 +165,6 @@ after close, same task
 
 `close()` doesn't stop the code that is running. The rest of the current handler finished, and even its `postMessage` got through. But nothing *scheduled* runs afterwards: the timer never fired. The cook finishes the dish in hand, and anything planned for later never happens.
 
-Use `close()` for a worker that knows it has done its one job. Use `terminate()` when the page decides. Either way, stopping a worker you no longer need matters: each one holds its own copy of its code and data in memory, and a worker nobody stops lives as long as the page does. That becomes a real problem in React, where components come and go ([lesson 12](12-workers-in-react.md)).
+Use `close()` for a worker that knows it has done its one job. Use `terminate()` when the page decides. Either way, stopping a worker you no longer need matters: each one holds its own copy of its code and data in memory, and a worker nobody stops lives as long as the page does. That becomes a real problem in React, where components come and go ([lesson 11](11-workers-in-react.md)).
 
 So far every worker has been an old-style script with `importScripts`. Real projects use `import` and a bundler, which is [lesson 5](05-module-workers-and-bundlers.md).
