@@ -1,0 +1,9 @@
+{
+  "name": "render-blocking",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Measures FCP and DOMContentLoaded with a slow stylesheet or script in <head>",
+  "scripts": {
+    "start": "node server.js"
+  }
+}
