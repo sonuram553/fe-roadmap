@@ -22,7 +22,7 @@ Glossary: [glossary.md](glossary.md)
 3. How does lazy loading images work natively (`loading="lazy"`), and what are its limitations?
 4. What's the impact of render-blocking resources (CSS in `<head>`, synchronous scripts) on First Contentful Paint?
 
-**Accessibility (a11y)**
+**Accessibility (a11y)** — notes: [accessibility tree](accessibility/01-the-accessibility-tree.md) · [ARIA vs native](accessibility/02-aria-and-native-semantics.md) · [keyboard & focus](accessibility/03-keyboard-and-focus.md) · [modal dialogs](accessibility/04-modal-dialogs.md) · [dropdowns](accessibility/05-dropdowns.md)
 
 1. How do ARIA roles/attributes interact with native HTML semantics? When should you *not* use ARIA ("no ARIA is better than bad ARIA")?
 2. How do you make a custom component (like a dropdown or modal) keyboard-accessible and screen-reader friendly using HTML/ARIA?
